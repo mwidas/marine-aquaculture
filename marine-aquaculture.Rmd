@@ -232,6 +232,7 @@ percent_region
 ```
 
 ```{r, warning=FALSE}
+# combne area and region plots into same viewer
 total_area_region+percent_region
 ```
 
@@ -311,8 +312,6 @@ aquaculture_regions <- function(species_name, min_temp, max_temp, max_depth, min
     ) +
     labs(title = print(paste0("Total Suitable Area for ", species_name))) # add map title 
          
-  total_area_region
-         
   # create visualization for total suitable area by region
   percent_region <- ggplot() +
     geom_sf(data = species_region, # plot the oyster regions
@@ -343,15 +342,14 @@ aquaculture_regions <- function(species_name, min_temp, max_temp, max_depth, min
       tick_height = 0.6
     ) +
     labs(title = print(paste0("Suitable Percentage for ", species_name))) # add map title 
-         
-  percent_region
   
-  total_area_region+percent_region
+  total_area_region+percent_region # combine outputs of plots
 }
 ```
 
 
 ```{r, warning=FALSE}
+# test aquaculture_regions function on pink shrimp
 aquaculture_regions(species_name = "Shrimp", min_temp = 6, max_tem = 12, max_depth = -437, min_depth = -36 )
 ```
 
