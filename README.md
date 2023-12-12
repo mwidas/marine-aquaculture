@@ -13,7 +13,11 @@ There will be two main visualizations produced in the `.Rmd` file. These visuali
 -   map algebra
 
 ## Data
-The data associated with this project was accessed from this [link](https://drive.google.com/u/0/uc?id=1u-iwnPDbe6ZK7wSFVMI-PpCKaRQ3RVmg&export=download). Store data locally and add `data` folder to the `.gitignore`.
+The data associated with this project was accessed from this [link](https://drive.google.com/u/0/uc?id=1u-iwnPDbe6ZK7wSFVMI-PpCKaRQ3RVmg&export=download).
+
+Data for this project was also accessed from the [US Census Bureau](https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html) at the 1:500,000 National scale.
+
+Store data locally and add `data` folder to the `.gitignore`.
 
 ```{r}
 marine-aquaculture
