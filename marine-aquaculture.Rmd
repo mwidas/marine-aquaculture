@@ -41,6 +41,9 @@ To characterize the depth of the ocean we will use the [General Bathymetric Char
 #### Exclusive Economic Zones
 We will be designating maritime boundaries using Exclusive Economic Zones off of the west coast of US from [Marineregions.org](https://www.marineregions.org/eez.php).
 
+#### Geographic Context
+We will use a shapefile that has the outline of the United States and its State components from the [United States Census Bureau](https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html) at the national scale.
+
 ## Exploration
 
 Data was loaded in including sea surface temperatures, depth, and Exclusive Economic Zone boundaries off of the west coast of the United States.\
@@ -157,24 +160,31 @@ oyster_region <- oyster_region %>%
   mutate(percent = (area / area_km2)*100)
 ```
 
-We will now create the following maps:
+We will now create the following maps showcasing the total suitable area by region and the percent suitable area by region.
 
--   total suitable area by region\
--   percent suitable area by region\
+```{r}
+# load data for USA
+usa <- read_sf(here("data", "cb_2022_us_state_500k", "cb_2022_us_state_500k.shp"))
+
+# filter data to just west coast which is our area of interest
+west_coast <- usa %>% 
+  filter(NAME %in% c("Washington", "Oregon", "California"))
+```
 
 ```{r include=TRUE, warning=FALSE}
 # create visualization for total suitable area by region
 total_area_region <- ggplot() +
   geom_sf(data = oyster_region, # plot the oyster regions
-          aes(fill = area, geometry = geometry)) + # fill by area
-  geom_sf_text(data = oyster_region, aes(geometry = geometry, label = value)) +
+          aes(fill = area, geometry = geometry)) +# fill by area
+  geom_sf(data = west_coast) +
+  geom_sf_text(data = oyster_region, aes(geometry = geometry, label = rgn)) +
  labs(fill='Area (m)') + # alter legend title
   scale_fill_viridis_c(begin = 0.4) +
   theme_void() +
   annotation_north_arrow( # add north arrow
   height = unit(1.5, "cm"),
   width = unit(1.5, "cm"),
-  pad_x = unit(1, "cm"),
+  pad_x = unit(0, "cm"),
   pad_y = unit(1, "cm"),
   rotation = NULL,
   style = north_arrow_fancy_orienteering
@@ -196,19 +206,21 @@ total_area_region <- ggplot() +
   
 total_area_region
 ```
+
 ```{r, warning=FALSE}
 # create visualization for percent suitable area by region
 percent_region <- ggplot() +
   geom_sf(data = oyster_region, # plot the oyster regions
           aes(fill = percent, geometry = geometry)) + # fill by percent
-  geom_sf_text(data = oyster_region, aes(geometry = geometry, label = value)) +
+  geom_sf(data = west_coast) +
+  geom_sf_text(data = oyster_region, aes(geometry = geometry, label = rgn)) +
   scale_fill_viridis_c(begin = 0.4) +
  labs(fill='Percentage') +
   theme_void() +
   annotation_north_arrow( # add north arrow
   height = unit(1.5, "cm"),
   width = unit(1.5, "cm"),
-  pad_x = unit(1, "cm"),
+  pad_x = unit(0, "cm"),
   pad_y = unit(1, "cm"),
   rotation = NULL,
   style = north_arrow_fancy_orienteering
@@ -285,14 +297,15 @@ aquaculture_regions <- function(species_name, min_temp, max_temp, max_depth, min
   total_area_region <- ggplot() +
     geom_sf(data = species_region, # plot the oyster regions
             aes(fill = area, geometry = geometry)) + # fill by area
-    geom_sf_text(data = species_region, aes(geometry = geometry, label = value)) +
+    geom_sf(data = west_coast) +
+    geom_sf_text(data = species_region, aes(geometry = geometry, label = rgn)) +
     scale_fill_viridis_c(begin = 0.4) +
     labs(fill='Area (m)') + # alter legend title
     theme_void() +
     annotation_north_arrow( # add north arrow
       height = unit(1.5, "cm"),
       width = unit(1.5, "cm"),
-      pad_x = unit(1, "cm"),
+      pad_x = unit(0, "cm"),
       pad_y = unit(1, "cm"),
       rotation = NULL,
       style = north_arrow_fancy_orienteering
@@ -312,11 +325,14 @@ aquaculture_regions <- function(species_name, min_temp, max_temp, max_depth, min
     ) +
     labs(title = print(paste0("Total Suitable Area for ", species_name))) # add map title 
          
+  total_area_region
+         
   # create visualization for total suitable area by region
   percent_region <- ggplot() +
     geom_sf(data = species_region, # plot the oyster regions
-            aes(fill = percent, geometry = geometry)) + # fill by area
-    geom_sf_text(data = species_region, aes(geometry = geometry, label = value)) +
+            aes(fill = percent, geometry = geometry)) + # fill by percentage
+    geom_sf(data = west_coast) + 
+    geom_sf_text(data = species_region, aes(geometry = geometry, label = rgn)) +
     scale_fill_viridis_c(begin = 0.4) +
     labs(fill='Percentage') + # alter legend title
     theme_void() +
@@ -342,8 +358,10 @@ aquaculture_regions <- function(species_name, min_temp, max_temp, max_depth, min
       tick_height = 0.6
     ) +
     labs(title = print(paste0("Suitable Percentage for ", species_name))) # add map title 
+         
+  percent_region
   
-  total_area_region+percent_region # combine outputs of plots
+  total_area_region+percent_region
 }
 ```
 
